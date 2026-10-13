@@ -6,6 +6,7 @@ final class PhotoEditorPresenter: ObservableObject {
     @Published private(set) var originalImage: UIImage?
     @Published private(set) var editedImage: UIImage?
     @Published private(set) var selectedFilter: PhotoFilter = .original
+    @Published private(set) var filterPreviews: [PhotoFilter: UIImage] = [:]
     @Published private(set) var isProcessing = false
     @Published private(set) var errorMessage: String?
 
@@ -19,6 +20,7 @@ final class PhotoEditorPresenter: ObservableObject {
         originalImage = image
         editedImage = image
         selectedFilter = .original
+        filterPreviews = [:]
         errorMessage = nil
     }
 
@@ -44,4 +46,29 @@ final class PhotoEditorPresenter: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+    
+    
+    func generateFilterPreviews() async {
+        guard let originalImage else {
+            return
+        }
+
+        var previews: [PhotoFilter: UIImage] = [:]
+
+        for filter in PhotoFilter.allCases {
+            do {
+                let preview = try await interactor.applyFilter(
+                    to: originalImage,
+                    filter: filter
+                )
+
+                previews[filter] = preview
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+
+        filterPreviews = previews
+    }
+
 }

@@ -28,9 +28,14 @@ struct PhotoEditorView: View {
                 ) {
                     Label("Select Photo", systemImage: "photo.on.rectangle")
                 }
+                
                 .onChange(of: selectedPhoto) { _, newItem in
                     Task {
-                        guard let data = try? await newItem?.loadTransferable(
+                        guard let newItem else {
+                            return
+                        }
+
+                        guard let data = try? await newItem.loadTransferable(
                             type: Data.self
                         ),
                         let image = UIImage(data: data) else {
@@ -38,28 +43,56 @@ struct PhotoEditorView: View {
                         }
 
                         presenter.setImage(image)
+                        await presenter.generateFilterPreviews()
                     }
                 }
 
-                Picker("Filter", selection: Binding(
-                    get: { presenter.selectedFilter },
-                    set: { filter in
-                        Task {
-                            await presenter.applyFilter(filter)
+
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(PhotoFilter.allCases) { filter in
+                            Button {
+                                Task {
+                                    await presenter.applyFilter(filter)
+                                }
+                            } label: {
+                                VStack(spacing: 6) {
+                                    Group {
+                                        if let preview = presenter.filterPreviews[filter] {
+                                            Image(uiImage: preview)
+                                                .resizable()
+                                                .scaledToFill()
+                                        } else {
+                                            Rectangle()
+                                                .fill(.gray.opacity(0.15))
+                                        }
+                                    }
+                                    .frame(width: 64, height: 64)
+                                    .clipped()
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(
+                                                presenter.selectedFilter == filter
+                                                    ? Color.purple
+                                                    : Color.clear,
+                                                lineWidth: 3
+                                            )
+                                    }
+
+                                    Text(filter.rawValue)
+                                        .font(.caption2)
+                                        .foregroundStyle(.primary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(presenter.originalImage == nil)
                         }
                     }
-                )) {
-                    ForEach(PhotoFilter.allCases) { filter in
-                        Text(filter.rawValue)
-                            .tag(filter)
-                    }
+                    .padding(.horizontal)
                 }
-                .pickerStyle(.menu)
-                .disabled(presenter.originalImage == nil)
 
-                if presenter.isProcessing {
-                    ProgressView("Applying Filter...")
-                }
 
                 Spacer()
             }
