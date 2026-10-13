@@ -11,7 +11,7 @@ import SwiftUI
 struct VIPERPhotoEditorApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            PhotoEditorRouter.createModule()
         }
     }
 }
