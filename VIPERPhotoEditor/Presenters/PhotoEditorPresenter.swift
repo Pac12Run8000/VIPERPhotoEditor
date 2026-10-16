@@ -100,5 +100,16 @@ final class PhotoEditorPresenter: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+    
+    func resetImage() {
+        guard let originalImage else {
+            return
+        }
+
+        selectedFilter = .original
+        contrast = 1.0
+        saturation = 1.0
+        editedImage = originalImage
+    }
 
 }

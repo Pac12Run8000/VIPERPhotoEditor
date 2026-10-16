@@ -67,6 +67,17 @@ struct PhotoEditorView: View {
                             )
                             .tint(PhotoEditorColors.royalBlue)
                         }
+                        Button {
+                            presenter.resetImage()
+                        } label: {
+                            Label("Reset to Original", systemImage: "arrow.counterclockwise")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(PhotoEditorColors.royalBlue)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding()
                     .background(
@@ -83,6 +94,7 @@ struct PhotoEditorView: View {
                             await presenter.updateAdjustments()
                         }
                     }
+                    
                 }
 
                 
