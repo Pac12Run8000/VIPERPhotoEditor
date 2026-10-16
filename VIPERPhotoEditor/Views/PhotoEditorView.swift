@@ -27,6 +27,65 @@ struct PhotoEditorView: View {
                     )
                 }
                 
+                
+                if presenter.originalImage != nil {
+                    VStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Contrast")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+
+                                Spacer()
+
+                                Text(presenter.contrast, format: .number.precision(.fractionLength(2)))
+                                    .font(.caption)
+                            }
+
+                            Slider(
+                                value: $presenter.contrast,
+                                in: 0.5...2.0
+                            )
+                            .tint(PhotoEditorColors.royalBlue)
+                        }
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Saturation")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+
+                                Spacer()
+
+                                Text(presenter.saturation, format: .number.precision(.fractionLength(2)))
+                                    .font(.caption)
+                            }
+
+                            Slider(
+                                value: $presenter.saturation,
+                                in: 0.0...2.0
+                            )
+                            .tint(PhotoEditorColors.royalBlue)
+                        }
+                    }
+                    .padding()
+                    .background(
+                        PhotoEditorColors.brightBlue.opacity(0.08),
+                        in: RoundedRectangle(cornerRadius: 16)
+                    )
+                    .onChange(of: presenter.contrast) { _, _ in
+                        Task {
+                            await presenter.updateAdjustments()
+                        }
+                    }
+                    .onChange(of: presenter.saturation) { _, _ in
+                        Task {
+                            await presenter.updateAdjustments()
+                        }
+                    }
+                }
+
+                
                 PhotosPicker(
                     selection: $selectedPhoto,
                     matching: .images

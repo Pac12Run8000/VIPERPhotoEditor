@@ -9,6 +9,8 @@ final class PhotoEditorPresenter: ObservableObject {
     @Published private(set) var filterPreviews: [PhotoFilter: UIImage] = [:]
     @Published private(set) var isProcessing = false
     @Published private(set) var errorMessage: String?
+    @Published var contrast: Double = 1.0
+    @Published var saturation: Double = 1.0
 
     private let interactor: PhotoEditorInteractor
 
@@ -38,9 +40,15 @@ final class PhotoEditorPresenter: ObservableObject {
         }
 
         do {
-            editedImage = try await interactor.applyFilter(
+            let filteredImage = try await interactor.applyFilter(
                 to: originalImage,
                 filter: filter
+            )
+
+            editedImage = interactor.adjustImage(
+                filteredImage,
+                contrast: contrast,
+                saturation: saturation
             )
         } catch {
             errorMessage = error.localizedDescription
@@ -70,6 +78,27 @@ final class PhotoEditorPresenter: ObservableObject {
         }
 
         filterPreviews = previews
+    }
+    
+    func updateAdjustments() async {
+        guard let originalImage else {
+            return
+        }
+
+        do {
+            let filteredImage = try await interactor.applyFilter(
+                to: originalImage,
+                filter: selectedFilter
+            )
+
+            editedImage = interactor.adjustImage(
+                filteredImage,
+                contrast: contrast,
+                saturation: saturation
+            )
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
 }

@@ -2,7 +2,37 @@ import UIKit
 import CoreImage
 import CoreImage.CIFilterBuiltins
 
+
 struct PhotoEditorInteractor {
+    
+    func adjustImage(
+        _ image: UIImage,
+        contrast: Double,
+        saturation: Double
+    ) -> UIImage {
+        guard let inputImage = CIImage(image: image) else {
+            return image
+        }
+
+        let filter = CIFilter.colorControls()
+        filter.inputImage = inputImage
+        filter.contrast = Float(contrast)
+        filter.saturation = Float(saturation)
+
+        guard let outputImage = filter.outputImage,
+              let cgImage = CIContext().createCGImage(
+                  outputImage,
+                  from: outputImage.extent
+              ) else {
+            return image
+        }
+
+        return UIImage(
+            cgImage: cgImage,
+            scale: image.scale,
+            orientation: image.imageOrientation
+        )
+    }
     
     
     
