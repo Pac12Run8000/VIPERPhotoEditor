@@ -3,12 +3,56 @@ import CoreImage
 import CoreImage.CIFilterBuiltins
 
 struct PhotoEditorInteractor {
+    
+    
+    
+    func createThumbnail(
+        from image: UIImage,
+        maxDimension: CGFloat = 150
+    ) -> UIImage {
+        let thumbnailSize = CGSize(
+            width: maxDimension,
+            height: maxDimension
+        )
+
+        let scale = max(
+            thumbnailSize.width / image.size.width,
+            thumbnailSize.height / image.size.height
+        )
+
+        let scaledSize = CGSize(
+            width: image.size.width * scale,
+            height: image.size.height * scale
+        )
+
+        let origin = CGPoint(
+            x: (thumbnailSize.width - scaledSize.width) / 2,
+            y: (thumbnailSize.height - scaledSize.height) / 2
+        )
+
+        let renderer = UIGraphicsImageRenderer(size: thumbnailSize)
+
+        return renderer.image { _ in
+            image.draw(
+                in: CGRect(
+                    origin: origin,
+                    size: scaledSize
+                )
+            )
+        }
+    }
+
+
 
     func applyFilter(
         to image: UIImage,
         filter: PhotoFilter
     ) async throws -> UIImage {
-        let inputImage = CIImage(image: image)
+        let inputImage = CIImage(
+            image: image
+        )?.oriented(
+            CGImagePropertyOrientation(image.imageOrientation)
+        )
 
         guard let inputImage else {
             throw PhotoEditorError.invalidImage
@@ -66,4 +110,32 @@ struct PhotoEditorInteractor {
 enum PhotoEditorError: Error {
     case invalidImage
     case processingFailed
+}
+
+
+
+private extension CGImagePropertyOrientation {
+
+    init(_ orientation: UIImage.Orientation) {
+        switch orientation {
+        case .up:
+            self = .up
+        case .down:
+            self = .down
+        case .left:
+            self = .left
+        case .right:
+            self = .right
+        case .upMirrored:
+            self = .upMirrored
+        case .downMirrored:
+            self = .downMirrored
+        case .leftMirrored:
+            self = .leftMirrored
+        case .rightMirrored:
+            self = .rightMirrored
+        @unknown default:
+            self = .up
+        }
+    }
 }

@@ -52,13 +52,14 @@ final class PhotoEditorPresenter: ObservableObject {
         guard let originalImage else {
             return
         }
+        let thumbnail = interactor.createThumbnail(from: originalImage)
 
         var previews: [PhotoFilter: UIImage] = [:]
 
         for filter in PhotoFilter.allCases {
             do {
                 let preview = try await interactor.applyFilter(
-                    to: originalImage,
+                    to: thumbnail,
                     filter: filter
                 )
 
