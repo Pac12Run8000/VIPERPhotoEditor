@@ -2,6 +2,10 @@ import SwiftUI
 import PhotosUI
 
 struct PhotoEditorView: View {
+    
+    @State private var showSaveSuccess = false
+    @State private var showSaveError = false
+    @State private var saveErrorMessage = ""
 
     @ObservedObject var presenter: PhotoEditorPresenter
     @State private var selectedPhoto: PhotosPickerItem?
@@ -127,7 +131,6 @@ struct PhotoEditorView: View {
                             )
                         
                     }
-                    
                     .onChange(of: selectedPhoto) { _, newItem in
                         Task {
                             guard let newItem else {
@@ -143,6 +146,30 @@ struct PhotoEditorView: View {
                             
                             presenter.setImage(image)
                             await presenter.generateFilterPreviews()
+                        }
+                    }
+                    
+                    if presenter.editedImage != nil {
+                        Button {
+                            Task {
+                                do {
+                                    try await presenter.savePhoto()
+                                    showSaveSuccess = true
+                                } catch {
+                                    saveErrorMessage = error.localizedDescription
+                                    showSaveError = true
+                                }
+                            }
+                        } label: {
+                            Label("Save Photo", systemImage: "square.and.arrow.down")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 14)
+                                .background(
+                                    PhotoEditorColors.royalBlue,
+                                    in: RoundedRectangle(cornerRadius: 12)
+                                )
                         }
                     }
                     
@@ -219,6 +246,16 @@ struct PhotoEditorView: View {
                 .padding()
                 .toolbar(.hidden, for: .navigationBar)
             }
+        }
+        .alert("Photo Saved", isPresented: $showSaveSuccess) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Your edited photo was saved to your photo library.")
+        }
+        .alert("Unable to Save Photo", isPresented: $showSaveError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(saveErrorMessage)
         }
     }
 }

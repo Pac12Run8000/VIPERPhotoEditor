@@ -17,6 +17,14 @@ final class PhotoEditorPresenter: ObservableObject {
     init(interactor: PhotoEditorInteractor) {
         self.interactor = interactor
     }
+    
+    func savePhoto() async throws {
+        guard let editedImage else {
+            return
+        }
+
+        try await interactor.savePhoto(editedImage)
+    }
 
     func setImage(_ image: UIImage) {
         originalImage = image

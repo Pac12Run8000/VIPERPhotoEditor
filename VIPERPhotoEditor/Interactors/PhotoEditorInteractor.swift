@@ -1,6 +1,7 @@
 import UIKit
 import CoreImage
 import CoreImage.CIFilterBuiltins
+import Photos
 
 
 struct PhotoEditorInteractor {
@@ -32,6 +33,18 @@ struct PhotoEditorInteractor {
             scale: image.scale,
             orientation: image.imageOrientation
         )
+    }
+    
+    func savePhoto(_ image: UIImage) async throws {
+        let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+
+        guard status == .authorized else {
+            throw PhotoSaveError.permissionDenied
+        }
+
+        try await PHPhotoLibrary.shared().performChanges {
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        }
     }
     
     func processImage(
@@ -202,6 +215,17 @@ struct PhotoEditorInteractor {
 enum PhotoEditorError: Error {
     case invalidImage
     case processingFailed
+}
+
+enum PhotoSaveError: LocalizedError {
+    case permissionDenied
+
+    var errorDescription: String? {
+        switch self {
+        case .permissionDenied:
+            return "Photo library permission was denied."
+        }
+    }
 }
 
 
