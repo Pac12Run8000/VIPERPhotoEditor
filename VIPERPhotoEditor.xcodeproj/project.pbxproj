@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0990148D3083E01200D4B649 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0990148C3083E01200D4B649 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		09901344307DC73600D4B649 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		09901336307DC73300D4B649 /* VIPERPhotoEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VIPERPhotoEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09901343307DC73600D4B649 /* VIPERPhotoEditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VIPERPhotoEditorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0990134D307DC73600D4B649 /* VIPERPhotoEditorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VIPERPhotoEditorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0990148C3083E01200D4B649 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		0990132D307DC73300D4B649 = {
 			isa = PBXGroup;
 			children = (
+				0990148C3083E01200D4B649 /* README.md */,
 				09901338307DC73300D4B649 /* VIPERPhotoEditor */,
 				09901346307DC73600D4B649 /* VIPERPhotoEditorTests */,
 				09901350307DC73600D4B649 /* VIPERPhotoEditorUITests */,
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0990148D3083E01200D4B649 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
