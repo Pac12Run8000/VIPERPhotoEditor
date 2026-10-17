@@ -5,6 +5,8 @@ import CoreImage.CIFilterBuiltins
 
 struct PhotoEditorInteractor {
     
+    private let context = CIContext()
+    
     func adjustImage(
         _ image: UIImage,
         contrast: Double,
@@ -20,10 +22,8 @@ struct PhotoEditorInteractor {
         filter.saturation = Float(saturation)
 
         guard let outputImage = filter.outputImage,
-              let cgImage = CIContext().createCGImage(
-                  outputImage,
-                  from: outputImage.extent
-              ) else {
+              let cgImage = context.createCGImage(outputImage,from: outputImage.extent)
+        else {
             return image
         }
 

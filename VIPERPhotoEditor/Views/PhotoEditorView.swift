@@ -84,14 +84,13 @@ struct PhotoEditorView: View {
                         PhotoEditorColors.brightBlue.opacity(0.08),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
-                    .onChange(of: presenter.contrast) { _, _ in
-                        Task {
+                    .task(id: [presenter.contrast, presenter.saturation]) {
+                        do {
+                            try await Task.sleep(for: .milliseconds(150))
+                            try Task.checkCancellation()
                             await presenter.updateAdjustments()
-                        }
-                    }
-                    .onChange(of: presenter.saturation) { _, _ in
-                        Task {
-                            await presenter.updateAdjustments()
+                        } catch {
+                            // A newer slider value cancelled this request.
                         }
                     }
                     
