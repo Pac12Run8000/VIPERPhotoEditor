@@ -86,13 +86,9 @@ final class PhotoEditorPresenter: ObservableObject {
         }
 
         do {
-            let filteredImage = try await interactor.applyFilter(
-                to: originalImage,
-                filter: selectedFilter
-            )
-
-            editedImage = interactor.adjustImage(
-                filteredImage,
+            editedImage = try interactor.processImage(
+                originalImage,
+                filter: selectedFilter,
                 contrast: contrast,
                 saturation: saturation
             )

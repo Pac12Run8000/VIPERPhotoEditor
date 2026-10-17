@@ -34,6 +34,68 @@ struct PhotoEditorInteractor {
         )
     }
     
+    func processImage(
+        _ image: UIImage,
+        filter: PhotoFilter,
+        contrast: Double,
+        saturation: Double
+    ) throws -> UIImage {
+
+        guard let inputImage = CIImage(image: image)?
+            .oriented(CGImagePropertyOrientation(image.imageOrientation))
+        else {
+            throw PhotoEditorError.invalidImage
+        }
+
+        let filteredImage: CIImage
+
+        switch filter {
+        case .original:
+            filteredImage = inputImage
+
+        case .sepia:
+            let effect = CIFilter.sepiaTone()
+            effect.inputImage = inputImage
+            effect.intensity = 1.0
+            filteredImage = effect.outputImage ?? inputImage
+
+        case .monochrome:
+            let effect = CIFilter.colorMonochrome()
+            effect.inputImage = inputImage
+            effect.color = CIColor.gray
+            effect.intensity = 1.0
+            filteredImage = effect.outputImage ?? inputImage
+
+        case .saturated:
+            let effect = CIFilter.colorControls()
+            effect.inputImage = inputImage
+            effect.saturation = 2.0
+            filteredImage = effect.outputImage ?? inputImage
+
+        case .desaturated:
+            let effect = CIFilter.colorControls()
+            effect.inputImage = inputImage
+            effect.saturation = 0.5
+            filteredImage = effect.outputImage ?? inputImage
+        }
+
+        let adjustments = CIFilter.colorControls()
+        adjustments.inputImage = filteredImage
+        adjustments.contrast = Float(contrast)
+        adjustments.saturation = Float(saturation)
+
+        guard let outputImage = adjustments.outputImage,
+              let cgImage = context.createCGImage(
+                  outputImage,
+                  from: outputImage.extent
+              )
+        else {
+            throw PhotoEditorError.processingFailed
+        }
+
+        return UIImage(cgImage: cgImage)
+    }
+    
     
     
     func createThumbnail(
@@ -124,7 +186,7 @@ struct PhotoEditorInteractor {
 
         }
 
-        let context = CIContext()
+       
 
         guard let cgImage = context.createCGImage(
             outputImage,
